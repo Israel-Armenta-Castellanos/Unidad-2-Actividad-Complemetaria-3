@@ -64,7 +64,24 @@ app.post('/insert', jsonParser, function (req, res) {
     res.status(201).send();
 })
 
-
+// Endpoint para obtener todas las tareas
+app.get('/todos', function (req, res) {
+    //Se realiza una consulta SELECT en la tabla "todos", en orden de creación desendente.
+    const query = 'SELECT * FROM todos ORDER BY created_at DESC';
+    //Ejecuta la consulta en la base de datos y retorna los resultados.
+    db.all(query, [], (err, rows) => {
+        //Manejo de errores.
+        if (err) {
+            console.error('Error ejecutando query:', err);
+            res.status(500).json({ error: 'Error en la base de datos' });
+            return;
+        }
+        //Enviamos una respuesta JSON con los datos.
+        res.setHeader('Content-Type', 'application/json');
+        //"row" contiene el arreglo con todas las tareas encontradas.
+        res.json(rows);
+    });
+});
 
 app.get('/', function (req, res) {
     //Enviamos de regreso la respuesta
@@ -89,3 +106,4 @@ const port = 3000;
 app.listen(port, () => {
     console.log(`Aplicación corriendo en http://localhost:${port}`)
 })
+
